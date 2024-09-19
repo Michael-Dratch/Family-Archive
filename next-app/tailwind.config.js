@@ -7,6 +7,15 @@ module.exports = {
   ],
   theme: {
     extend: {
+      padding: {
+        navbar: "3.5rem",
+      },
+      margin: {
+        navbar: "3.5rem",
+      },
+      height: {
+        navbar: "3.5rem",
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",

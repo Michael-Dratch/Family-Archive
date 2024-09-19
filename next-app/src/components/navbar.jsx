@@ -2,8 +2,8 @@ import React from "react";
 
 export default function Navbar() {
   return (
-    <div className="bg-white p-4 border-b border-gray-300">
-      <span className="text-xl text-teal-800">Family Archive</span>
+    <div className="bg-white h-navbar flex items-center p-4 border-b border-gray-300 bg-opacity-95">
+      <span className="font-bold text-xl text-teal-600">Family Archive</span>
     </div>
   );
 }

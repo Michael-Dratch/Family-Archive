@@ -1,11 +1,21 @@
 "use client";
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import Dropzone from "react-dropzone";
 
 const CreateArchivePage = () => {
-  const [coverImage, setCoverImage] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState(null);
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0]; // Get the first selected file
+    setImage(file);
+
+    // Create a URL for the image preview
+    const imageUrl = URL.createObjectURL(file);
+    setPreview(imageUrl);
+  };
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -25,48 +35,78 @@ const CreateArchivePage = () => {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Create a New Archive</h1>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "10px" }}>
-          <label htmlFor="coverImage">Cover Image URL:</label>
-          <input
-            type="text"
-            id="coverImage"
-            value={coverImage}
-            onChange={(e) => setCoverImage(e.target.value)}
-            required
-            style={{ marginLeft: "10px", width: "300px" }}
-          />
-        </div>
+    <div className="p-4 bg-gray-100">
+      <div className="bg-white border-2 p-4 rounded-lg border-gray-200">
+        <h1 className="font-semibold">Create a New Archive</h1>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 pt-4 ">
+          <div className="flex flex-col">
+            <label className="font-semibold text-sm" htmlFor="title">
+              Title
+            </label>
+            <input
+              className="border border-gray-300 rounded p-2 bg-gray-50 h-10 focus:outline-teal-500"
+              type="text"
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+            />
+          </div>
+          <div className="flex flex-col">
+            <label className="font-semibold text-sm" htmlFor="description">
+              Description:
+            </label>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+              rows="4"
+              cols="40"
+              className="border border-gray-300 rounded bg-gray-50 p-2 focus:outline-teal-500"
+            />
+          </div>
+          <div>
+            <label className="font-semibold text-sm" htmlFor="imageUpload">
+              Cover Image:
+            </label>
+            <Dropzone onDrop={(acceptedFiles) => console.log(acceptedFiles)}>
+              {({ getRootProps, getInputProps }) => (
+                <section>
+                  <div
+                    className="p-8 text-gray-500 flex flex-col justify-center items-center border border-dashed border-gray-300 bg-gray-50 rounded p-4"
+                    {...getRootProps()}
+                  >
+                    <input {...getInputProps()} />
+                    <div>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="size-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"
+                        />
+                      </svg>
+                    </div>
 
-        <div style={{ marginBottom: "10px" }}>
-          <label htmlFor="title">Title:</label>
-          <input
-            type="text"
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            style={{ marginLeft: "10px", width: "300px" }}
-          />
-        </div>
-
-        <div style={{ marginBottom: "10px" }}>
-          <label htmlFor="description">Description:</label>
-          <textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-            rows="4"
-            cols="40"
-            style={{ marginLeft: "10px", width: "300px" }}
-          />
-        </div>
-
-        <button type="submit">Create Archive</button>
-      </form>
+                    <p className="pt-2 font-semibold">Upload a File</p>
+                    <p className="hidden sm:block text-sm">
+                      Drag and drop files here
+                    </p>
+                  </div>
+                </section>
+              )}
+            </Dropzone>
+          </div>
+          <button type="submit">Create Archive</button>
+        </form>
+      </div>
     </div>
   );
 };
