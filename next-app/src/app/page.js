@@ -4,7 +4,6 @@ import { useState } from "react";
 import ArchiveCard from "@/components/archivecard";
 import CreateArchiveCard from "@/components/createarchivecard";
 import CreateCollectionModal from "@/components/createcollectionmodal";
-import PrimaryButton from "@/components/primarybutton";
 
 export default function Home() {
   const [modalVisible, setModalVisible] = useState(false);
