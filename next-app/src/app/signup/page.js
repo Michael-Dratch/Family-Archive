@@ -1,7 +1,56 @@
 "use client";
 import React, { useEffect, useState } from "react";
-
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 export default function SignUp() {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordMatch, setPasswordMatch] = useState(true);
+  const [isEmailInUse, setIsEmailInUse] = useState(false);
+  const [checkPassowrd, setCheckPassword] = useState(false);
+  const { signup, loginWithGoogle } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (checkPassowrd) {
+      validatePasswordMatch();
+    }
+  }, [password, confirmPassword]);
+
+  const validatePasswordMatch = () => {
+    setPasswordMatch(password === confirmPassword);
+  };
+
+  const handleSignInWithGoogle = async () => {
+    try {
+      const user = await loginWithGoogle();
+      router.push("/");
+    } catch (e) {}
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    validatePasswordMatch();
+    setCheckPassword(true);
+    if (!passwordMatch) return;
+    try {
+      const userCredential = await signup(email, password);
+      router.push("/");
+    } catch (error) {
+      console.log(error.code);
+      switch (error.code) {
+        case "auth/email-already-in-use":
+          setIsEmailInUse(true);
+          break;
+        default:
+          console.log("Error creating new account", error);
+          break;
+      }
+    }
+  };
+
   return (
     <div className="mt-navbar pt-20 flex flex-col items-center">
       <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto  lg:py-0">
@@ -10,7 +59,10 @@ export default function SignUp() {
             <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
               Create an account
             </h1>
-            <button class="mx-auto px-4 py-2 border flex gap-2 border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 hover:text-slate-900 dark:hover:text-slate-300 hover:shadow transition duration-150">
+            <button
+              onClick={handleSignInWithGoogle}
+              class="mx-auto px-4 py-2 border flex gap-2 border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 hover:text-slate-900 dark:hover:text-slate-300 hover:shadow transition duration-150"
+            >
               <img
                 class="w-6 h-6"
                 src="https://www.svgrepo.com/show/475656/google-color.svg"
@@ -25,7 +77,11 @@ export default function SignUp() {
                 or
               </div>
             </div>
-            <form class="space-y-4 md:space-y-6" action="#">
+            <form
+              onSubmit={handleSubmit}
+              class="space-y-4 md:space-y-6"
+              action="#"
+            >
               <div>
                 <label
                   for="email"
@@ -34,11 +90,13 @@ export default function SignUp() {
                   Full Name
                 </label>
                 <input
+                  onChange={(e) => setUsername(e.target.value)}
+                  value={username}
                   type="text"
                   name="name"
                   id="name"
                   class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="name@company.com"
+                  placeholder="Sam Sisenwine"
                   required={true}
                 ></input>
               </div>
@@ -50,6 +108,8 @@ export default function SignUp() {
                   Your email
                 </label>
                 <input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   type="email"
                   name="email"
                   id="email"
@@ -57,6 +117,11 @@ export default function SignUp() {
                   placeholder="name@company.com"
                   required={true}
                 ></input>
+                {isEmailInUse && (
+                  <span className="text-red-600">
+                    An account with this email already exists
+                  </span>
+                )}
               </div>
               <div>
                 <label
@@ -66,12 +131,15 @@ export default function SignUp() {
                   Password
                 </label>
                 <input
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   type="password"
                   name="password"
                   id="password"
                   placeholder="••••••••"
                   class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  required={true}
+                  required
+                  minLength={6}
                 ></input>
               </div>
               <div>
@@ -79,9 +147,11 @@ export default function SignUp() {
                   for="password"
                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
-                  Password
+                  Repeat Password
                 </label>
                 <input
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   type="password"
                   name="repeatpassword"
                   id="repeatpassword"
@@ -89,6 +159,9 @@ export default function SignUp() {
                   class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   required={true}
                 ></input>
+                {!passwordMatch && (
+                  <span className="text-red-600">Password does not match</span>
+                )}
               </div>
               <button
                 type="submit"
@@ -99,7 +172,7 @@ export default function SignUp() {
               <p class="text-sm font-light text-gray-500 dark:text-gray-400">
                 Already have an account?{" "}
                 <a
-                  href="#"
+                  href="/signin"
                   class="font-medium text-primary-600 hover:underline dark:text-primary-500"
                 >
                   Sign in

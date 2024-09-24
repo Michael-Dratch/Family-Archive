@@ -1,7 +1,26 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function SignIn() {
+  const { loginWithGoogle, SignIn } = useAuth();
+  const router = useRouter();
+
+  const handleSignInWithGoogle = async () => {
+    try {
+      const user = await loginWithGoogle();
+      router.push("/");
+    } catch (e) {}
+  };
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    const formData = new FormData(event.target);
+    const name = formData.get("name");
+    const email = formData.get("email");
+  };
+
   return (
     <div className="mt-navbar pt-20 flex flex-col items-center">
       <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto  lg:py-0">
@@ -10,7 +29,10 @@ export default function SignIn() {
             <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
               Welcome back
             </h1>
-            <button class="mx-auto px-4 py-2 border flex gap-2 border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 hover:text-slate-900 dark:hover:text-slate-300 hover:shadow transition duration-150">
+            <button
+              onClick={handleSignInWithGoogle}
+              class="mx-auto px-4 py-2 border flex gap-2 border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 hover:text-slate-900 dark:hover:text-slate-300 hover:shadow transition duration-150"
+            >
               <img
                 class="w-6 h-6"
                 src="https://www.svgrepo.com/show/475656/google-color.svg"
@@ -25,7 +47,11 @@ export default function SignIn() {
                 or
               </div>
             </div>
-            <form class="space-y-4 md:space-y-6" action="#">
+            <form
+              onSubmit={handleLogin}
+              class="space-y-4 md:space-y-6"
+              action="#"
+            >
               <div>
                 <label
                   for="email"
@@ -39,7 +65,7 @@ export default function SignIn() {
                   id="email"
                   class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="name@company.com"
-                  required=""
+                  required={true}
                 ></input>
               </div>
               <div>
@@ -55,7 +81,7 @@ export default function SignIn() {
                   id="password"
                   placeholder="••••••••"
                   class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  required=""
+                  required={true}
                 ></input>
               </div>
               <div class="flex items-center justify-between">
@@ -75,7 +101,7 @@ export default function SignIn() {
               <p class="text-sm font-light text-gray-500 dark:text-gray-400">
                 Don’t have an account yet?{" "}
                 <a
-                  href="#"
+                  href="/signup"
                   class="font-medium text-primary-600 hover:underline dark:text-primary-500"
                 >
                   Sign up
