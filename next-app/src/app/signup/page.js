@@ -34,7 +34,7 @@ export default function SignUp() {
     event.preventDefault();
     validatePasswordMatch();
     setCheckPassword(true);
-    if (!passwordMatch) return;
+    if (password != confirmPassword) return;
     try {
       const userCredential = await signup(email, password);
       router.push("/");
@@ -147,7 +147,7 @@ export default function SignUp() {
                   for="password"
                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
-                  Repeat Password
+                  Confirm Password
                 </label>
                 <input
                   value={confirmPassword}

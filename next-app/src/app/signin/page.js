@@ -1,10 +1,11 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 
 export default function SignIn() {
-  const { loginWithGoogle, SignIn } = useAuth();
+  const { loginWithGoogle, login } = useAuth();
+  const [isInvalidCredentails, setIsInvalidCredentails] = useState(false);
   const router = useRouter();
 
   const handleSignInWithGoogle = async () => {
@@ -14,11 +15,25 @@ export default function SignIn() {
     } catch (e) {}
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const formData = new FormData(event.target);
-    const name = formData.get("name");
+    const formData = new FormData(e.target);
     const email = formData.get("email");
+    const password = formData.get("password");
+    try {
+      const user = await login(email, password);
+      router.push("/");
+    } catch (error) {
+      console.log(error);
+      switch (error.code) {
+        case "auth/invalid-credential":
+          setIsInvalidCredentails(true);
+          break;
+        default:
+          console.log("Error signing into account");
+          break;
+      }
+    }
   };
 
   return (
@@ -47,11 +62,7 @@ export default function SignIn() {
                 or
               </div>
             </div>
-            <form
-              onSubmit={handleLogin}
-              class="space-y-4 md:space-y-6"
-              action="#"
-            >
+            <form onSubmit={handleLogin} class="" action="#">
               <div>
                 <label
                   for="email"
@@ -68,7 +79,7 @@ export default function SignIn() {
                   required={true}
                 ></input>
               </div>
-              <div>
+              <div className="mt-4 md:mt-6">
                 <label
                   for="password"
                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -84,7 +95,7 @@ export default function SignIn() {
                   required={true}
                 ></input>
               </div>
-              <div class="flex items-center justify-between">
+              <div class="flex items-center justify-between mt-2">
                 <a
                   href="#"
                   class="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500"
@@ -92,13 +103,20 @@ export default function SignIn() {
                   Forgot password?
                 </a>
               </div>
+              <div className="mt-2 h-8">
+                {isInvalidCredentails && (
+                  <span className="border border-red-300 rounded px-4 py-1 bg-red-50 text-sm text-red-500">
+                    Incorrect email or password
+                  </span>
+                )}
+              </div>
               <button
                 type="submit"
-                class="w-full text-white bg-teal-600 hover:bg-teal-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-primary-800"
+                class="mt-2 w-full text-white bg-teal-600 hover:bg-teal-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-primary-800"
               >
                 Sign in
               </button>
-              <p class="text-sm font-light text-gray-500 dark:text-gray-400">
+              <p class="mt-4 text-sm font-light text-gray-500 dark:text-gray-400">
                 Don’t have an account yet?{" "}
                 <a
                   href="/signup"

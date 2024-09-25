@@ -33,7 +33,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (email, password) => {
-    return signInWithEmailAndPassword(auth, email, password);
+    return signInWithEmailAndPassword(auth, email, password).then(
+      (userCredential) => {
+        const user = userCredential.user;
+        return user;
+      }
+    );
   };
 
   const loginWithGoogle = async () => {
