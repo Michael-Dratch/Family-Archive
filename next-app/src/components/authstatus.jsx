@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "../../firebase/clientApp";
+import { auth } from "../../config/firebase/clientApp";
 
 export default function AuthStatus() {
   const [user, loading, error] = useAuthState(auth);

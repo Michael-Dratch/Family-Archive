@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import DbService from "@/services/db/db";
 export default function SignUp() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -25,9 +26,13 @@ export default function SignUp() {
 
   const handleSignInWithGoogle = async () => {
     try {
-      const user = await loginWithGoogle();
-      router.push("/");
-    } catch (e) {}
+      const { email, username } = await loginWithGoogle();
+      const profile = await DbService.createUserProfile(email, username);
+      //router.push("/");
+    } catch (e) {
+      console.log("Error creating user account");
+      console.log(e);
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -37,9 +42,9 @@ export default function SignUp() {
     if (password != confirmPassword) return;
     try {
       const userCredential = await signup(email, password);
-      router.push("/");
+      const profile = await DbService.createUserProfile(email, username);
+      //router.push("/");
     } catch (error) {
-      console.log(error.code);
       switch (error.code) {
         case "auth/email-already-in-use":
           setIsEmailInUse(true);
