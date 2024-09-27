@@ -28,8 +28,9 @@ export default function SignUp() {
     try {
       const { email, username } = await loginWithGoogle();
       const profile = await DbService.createUserProfile(email, username);
-      //router.push("/");
+      router.push("/");
     } catch (e) {
+      alert("Error creating user account");
       console.log("Error creating user account");
       console.log(e);
     }
@@ -43,13 +44,14 @@ export default function SignUp() {
     try {
       const userCredential = await signup(email, password);
       const profile = await DbService.createUserProfile(email, username);
-      //router.push("/");
+      router.push("/");
     } catch (error) {
       switch (error.code) {
         case "auth/email-already-in-use":
           setIsEmailInUse(true);
           break;
         default:
+          alert("Error creating user account");
           console.log("Error creating new account", error);
           break;
       }

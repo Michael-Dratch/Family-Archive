@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import XIcon from "./xicon";
+import CollectionService from "@/services/collections/collections";
 
 const CreateCollectionModal = () => {
   const [title, setTitle] = useState("");
@@ -23,8 +24,9 @@ const CreateCollectionModal = () => {
     // You can add other options here, such as accepted file types
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const result = await CollectionService.createCollection();
   };
 
   return (

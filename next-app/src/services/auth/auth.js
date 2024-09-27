@@ -1,4 +1,4 @@
-import firebaseAuthService from "./firebaseauth";
+import firebaseAuthService from "./firebase-auth";
 
 /*
 
