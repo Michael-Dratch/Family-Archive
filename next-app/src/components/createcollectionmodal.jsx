@@ -26,7 +26,24 @@ const CreateCollectionModal = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await CollectionService.createCollection();
+    try {
+      const result = await CollectionService.createCollection({
+        title: title,
+        description: description,
+      });
+    } catch (e) {
+      switch (e.message) {
+        case "MAX_COLLECTIONS":
+          alert("You've reached the maximum collections limit.");
+          break;
+        default:
+          console.log(e.message);
+          alert(
+            "There was an error creating the collection. Please try again later."
+          );
+          break;
+      }
+    }
   };
 
   return (

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
-
+import ProfilesService from "@/services/profiles/profiles";
 export default function SignIn() {
   const { loginWithGoogle, login } = useAuth();
   const [isInvalidCredentails, setIsInvalidCredentails] = useState(false);
@@ -10,9 +10,12 @@ export default function SignIn() {
 
   const handleSignInWithGoogle = async () => {
     try {
-      const user = await loginWithGoogle();
+      const { uid, email, username } = await loginWithGoogle();
+      await ProfilesService.createUserProfile(uid, email, username);
       router.push("/");
-    } catch (e) {}
+    } catch (e) {
+      alert("Error signing in to account");
+    }
   };
 
   const handleLogin = async (e) => {
@@ -21,16 +24,15 @@ export default function SignIn() {
     const email = formData.get("email");
     const password = formData.get("password");
     try {
-      const user = await login(email, password);
+      await login(email, password);
       router.push("/");
     } catch (error) {
-      console.log(error);
       switch (error.code) {
         case "auth/invalid-credential":
           setIsInvalidCredentails(true);
           break;
         default:
-          console.log("Error signing into account");
+          alert("Error signing into account");
           break;
       }
     }

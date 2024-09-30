@@ -26,8 +26,7 @@ const loginWithGoogle = async () => {
   return signInWithPopup(auth, provider)
     .then((result) => {
       const user = result.user;
-      console.log(user);
-      return { email: user.email, username: user.displayName };
+      return { uid: user.uid, email: user.email, username: user.displayName };
     })
     .catch((error) => {
       return error;

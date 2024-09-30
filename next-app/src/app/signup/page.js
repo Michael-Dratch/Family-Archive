@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
-import DbService from "@/services/db/db";
+import ProfilesService from "@/services/profiles/profiles";
 export default function SignUp() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -26,13 +26,11 @@ export default function SignUp() {
 
   const handleSignInWithGoogle = async () => {
     try {
-      const { email, username } = await loginWithGoogle();
-      const profile = await DbService.createUserProfile(email, username);
+      const { uid, email, username } = await loginWithGoogle();
+      await ProfilesService.createUserProfile(uid, email, username);
       router.push("/");
     } catch (e) {
       alert("Error creating user account");
-      console.log("Error creating user account");
-      console.log(e);
     }
   };
 
@@ -43,7 +41,11 @@ export default function SignUp() {
     if (password != confirmPassword) return;
     try {
       const userCredential = await signup(email, password);
-      const profile = await DbService.createUserProfile(email, username);
+      const profile = await ProfilesService.createUserProfile(
+        userCredential.user.uid,
+        email,
+        username
+      );
       router.push("/");
     } catch (error) {
       switch (error.code) {
@@ -52,7 +54,6 @@ export default function SignUp() {
           break;
         default:
           alert("Error creating user account");
-          console.log("Error creating new account", error);
           break;
       }
     }

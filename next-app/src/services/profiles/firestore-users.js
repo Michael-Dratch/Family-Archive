@@ -2,10 +2,10 @@ import {
   doc,
   setDoc,
   getDoc,
-  getDocs,
   collection,
   query,
   where,
+  getCountFromServer,
 } from "firebase/firestore";
 import { db } from "../../../config/firebase/clientApp";
 
@@ -28,28 +28,35 @@ const getUserProfile = async (userID) => {
   return result;
 };
 
-const createUserProfile = async (email, username) => {
+const createUserProfile = async (userID, email, username) => {
+  console.log({ userID });
   try {
-    const docRef = doc(db, "users", email);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      console.log("User already exists:", docSnap.data());
-      return docSnap.data();
+    const profileExists = await doesProfileExist(email);
+    if (profileExists) {
+      return { email: email, username: username };
     } else {
-      console.log("creating new profile");
-      await setDoc(doc(db, "users", email), {
+      await setDoc(doc(db, "users", userID), {
+        email: email,
         username: username,
       });
-      return { uid: email, username: username };
+      return { email: email, username: username };
     }
   } catch (error) {
     throw new Error(error);
   }
 };
 
-const FirestoreService = {
+const doesProfileExist = async (email) => {
+  const usersRef = collection(db, "users");
+  const q = query(usersRef, where("email", "==", email));
+  const snapshot = await getCountFromServer(q);
+  const profileExists = snapshot.data().count ? true : false;
+  return profileExists;
+};
+
+const FirestoreUserService = {
   getUserProfile: getUserProfile,
   createUserProfile: createUserProfile,
 };
 
-export default FirestoreService;
+export default FirestoreUserService;
